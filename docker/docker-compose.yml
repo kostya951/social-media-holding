@@ -1,0 +1,40 @@
+services:
+  web-server:
+    build: ./apache
+    volumes:
+      - ../src:/var/www
+      - ./apache/apache-conf/:/etc/apache2/sites-enabled/
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - internal-social
+
+  database:
+    build: ./database
+    environment:
+      - MYSQL_DATABASE=db
+      - MYSQL_ROOT_PASSWORD=951753
+    ports:
+      - "3306:3306"
+    networks:
+      - internal-social
+    volumes:
+      - social:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=host.docker.internal
+    restart: always
+    ports:
+      - 8080:80
+    networks:
+      - internal-social
+
+volumes:
+    social:
+
+networks:
+  internal-social:
